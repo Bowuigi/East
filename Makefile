@@ -1,12 +1,13 @@
 CC = cc
-CFLAGS = -Os -Wall -Wpedantic -std=c99
+OPT = -Os
+CFLAGS = -Wall -Wpedantic -std=c99
 DEBUGCFLAGS =-O0 -ggdb -Wall -Wpedantic -std=c99
 MKDIRP = mkdir -p
 DESTDIR = /usr/local/bin/
 
 build:
 	@echo 'Building...'
-	$(CC) $(CFLAGS) src/east.c -o east
+	$(CC) $(OPT) $(CFLAGS) src/east.c -o east
 
 debug:
 	@echo 'Building a debug release...'
