@@ -2,7 +2,7 @@
 #define EAST_INSTR_H
 
 #include "globals.h"
-#define INST_ERR(err) do {fprintf(stderr, "East, error while interpreting\nCharacter %d ('%c'): %s\n", E->pc+1, E->exec[E->pc], err); exit(1);} while (0);
+#define INST_ERR(err) do {fprintf(stderr, "East, error while interpreting\nCharacter %zu ('%c'): %s\n", E->pc+1, E->exec[E->pc], err); exit(1);} while (0);
 //extern void ExecuteString(char*, data_t*, inst_t*, char*);
 
 #define INST_MATH_OP(op) \
