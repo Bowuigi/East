@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -Oz -Wall -Wpedantic -std=c99
+CFLAGS = -Os -Wall -Wpedantic -std=c99
 DEBUGCFLAGS =-O0 -ggdb -Wall -Wpedantic -std=c99
 MKDIRP = mkdir -p
 DESTDIR = /usr/local/bin/

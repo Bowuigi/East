@@ -203,7 +203,7 @@ INSTR(inst_IfNotEqual) {
 inst_t *Inst_Get() {
 	static inst_t i[127];
 
-	for (int c = 0; c < 128; c++)
+	for (int c = 0; c < 127; c++)
 		i[c] = inst_PushLiteral;
 
 	i['<']  = inst_PrevChar;

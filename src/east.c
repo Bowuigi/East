@@ -34,7 +34,6 @@ void ExecuteString(char *string, data_t *data, inst_t *instr, char *input) {
 
 	// Execute the instruction given in the table
 	for (E.pc = 0; E.pc < strlen(string); E.pc++) {
-		printf("Character %c, PC %d\n",string[E.pc],E.pc);
 		// Execute instruction if the current character is not a newline or an underscore, since they are used for readability
 		if (!(string[E.pc] == '\n' || string[E.pc] == '_'))
 			instr[(int)string[E.pc]](&E);
@@ -43,6 +42,7 @@ void ExecuteString(char *string, data_t *data, inst_t *instr, char *input) {
 	// Cleanup
 	WP_Delete(&E.data_waypoint);
 	WP_Delete(&E.input_waypoint);
+	*data = E.data;
 }
 
 int main(int argc, char **argv) {
