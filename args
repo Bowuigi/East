@@ -1,0 +1,11 @@
+-h show help
+-c char mode (default)
+-f float mode
+-d double mode
+-F use first argument (that is not options) as a script file
+-n No standard input or file required
+
+Examples
+
+east -dnF myScript.east
+Run "myScript.east" (the file) in double mode, without stdin/file to read
