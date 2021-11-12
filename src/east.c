@@ -29,7 +29,13 @@ char *ReadFile(size_t *length, FILE *fp) {
 	}
 
 	contents[file_length] = '\0';
-	*length = file_length/sizeof(char);
+
+	if (contents[file_length-1] == '\n') {
+		file_length--;
+		contents[file_length] = '\0';
+	}
+
+	*length = file_length;
 
 	return contents;
 }
@@ -58,7 +64,13 @@ char *ReadStdin(size_t *length) {
 		str_length++;
 	}
 
+	str_length--; // Position over EOF
 	contents[str_length] = '\0';
+
+	if (contents[str_length-1] == '\n') {
+		str_length--;
+		contents[str_length] = '\0';
+	}
 
 	return contents;
 }
