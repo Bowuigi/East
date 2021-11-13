@@ -8,26 +8,26 @@
 #define INST_MATH_OP(op) \
 	switch (E->data.mode) { \
 		case EAST_DATA_CHAR: { \
+				if (E->data.length == 0) INST_ERR("Data empty"); \
 				char a = Data_PopC(&E->data); \
+				if (E->data.length == 0) INST_ERR("Data empty"); \
 				char b = Data_PopC(&E->data); \
-				if (!(a && b)) \
-					INST_ERR("Data empty"); \
 				Data_PushC(&E->data,op); \
 				break; \
 			} \
 		case EAST_DATA_FLOAT: { \
+				if (E->data.length == 0) INST_ERR("Data empty"); \
 				float a = Data_PopF(&E->data); \
+				if (E->data.length == 0) INST_ERR("Data empty"); \
 				float b = Data_PopF(&E->data); \
-				if (!(a && b)) \
-					INST_ERR("Data empty"); \
 				Data_PushF(&E->data,op); \
 				break; \
 			} \
 		case EAST_DATA_DOUBLE: { \
+				if (E->data.length == 0) INST_ERR("Data empty"); \
 				float a = Data_PopD(&E->data); \
+				if (E->data.length == 0) INST_ERR("Data empty"); \
 				float b = Data_PopD(&E->data); \
-				if (!(a && b)) \
-					INST_ERR("Data empty"); \
 				Data_PushD(&E->data,op); \
 				break; \
 			} \
@@ -46,7 +46,6 @@
 			break; \
 	}
 
-
 // Input string operations (read only)
 
 // (>) Go to the next character on the input string
@@ -64,21 +63,43 @@ INSTR(inst_PrevChar) {
 // Generic data operations
 
 // (.) Push the current input character to the data
-INSTR(inst_PushChar) {
+INSTR(inst_PushItem) {
 	INST_PUSH_CASTED(E->input[E->input_index])
 }
 
 // (,) Pop the topmost character from the data
-INSTR(inst_PopChar) {
+INSTR(inst_PopItem) {
 	if (E->data.length == 0)
 		INST_ERR("Data empty");
 	Data_Pop(&E->data);
+}
+
+INSTR(inst_DupItem) {
+	if (E->data.length == 0)
+		INST_ERR("Data empty");
+
+	ditem_t item = Data_Pop(&E->data);
+	switch (E->data.mode) {
+		case EAST_DATA_CHAR:
+			Data_PushC(&E->data, item.c);
+			Data_PushC(&E->data, item.c);
+			break;
+		case EAST_DATA_FLOAT:
+			Data_PushF(&E->data, item.f);
+			Data_PushF(&E->data, item.f);
+			break;
+		case EAST_DATA_DOUBLE:
+			Data_PushD(&E->data, item.d);
+			Data_PushD(&E->data, item.d);
+			break;
+	}
 }
 
 // (;) Pop and print the topmost character from the data
 INSTR(inst_PrintChar) {
 	if (E->data.length == 0)
 		INST_ERR("Data empty");
+
 	switch (E->data.mode) {
 		case EAST_DATA_CHAR:
 			putchar(Data_PopC(&E->data));
@@ -89,6 +110,31 @@ INSTR(inst_PrintChar) {
 		case EAST_DATA_DOUBLE:
 			putchar(Data_PopD(&E->data));
 			break;
+	}
+}
+
+// (:) Pop and print the topmost character from the data as a number
+INSTR(inst_PrintNumber) {
+	if (E->data.length == 0)
+		INST_ERR("Data empty");
+
+	switch (E->data.mode) {
+		case EAST_DATA_CHAR:
+			printf("%i", (signed char)Data_PopC(&E->data));
+			break;
+		case EAST_DATA_FLOAT:
+			printf("%f", Data_PopF(&E->data));
+			break;
+		case EAST_DATA_DOUBLE: {
+				double n = Data_PopD(&E->data);
+
+				if (n > 1e6) {
+					printf("%e", n);
+				} else {
+					printf("%f", n);
+				}
+				break;
+			}
 	}
 }
 
@@ -200,28 +246,45 @@ INSTR(inst_IfNotEqual) {
 	}
 }
 
+// (#) Ignores everything until a newline or a NUL is found on the executed string
+INSTR(inst_Comment) {
+	while (E->exec[E->pc] != '\n' && E->exec[E->pc] != '\0') {
+		E->pc++;
+	}
+}
+
 inst_t *Inst_Get() {
 	static inst_t i[127];
 
+	// Uses executed string
 	for (int c = 0; c < 127; c++)
 		i[c] = inst_PushLiteral;
 
+	i['\\'] = inst_PushEscaped;
+
+	// Uses input string
 	i['<']  = inst_PrevChar;
 	i['>']  = inst_NextChar;
-	i['.']  = inst_PushChar;
-	i[',']  = inst_PopChar;
+	// Uses on top data item
+	i['.']  = inst_PushItem;
+	i[',']  = inst_PopItem;
+	i['&']  = inst_DupItem;
 	i[';']  = inst_PrintChar;
+	i[':']  = inst_PrintNumber;
+	// Uses topmost two stack items
 	i['+']  = inst_AddData;
 	i['-']  = inst_SubData;
+	// Uses entire stack
 	i['!']  = inst_ReverseData;
 	i['@']  = inst_RotateData;
-	i['\\'] = inst_PushEscaped;
+	// Uses PC, controls the state of the interpreter
 	i['[']  = inst_SetInputWP;
 	i[']']  = inst_UseInputWP;
 	i['{']  = inst_SetDataWP;
 	i['}']  = inst_UseDataWP;
 	i['}']  = inst_UseDataWP;
 	i['?']  = inst_IfNotEqual;
+	i['#']  = inst_Comment;
 
 	return i;
 }
