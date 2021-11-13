@@ -46,34 +46,35 @@
 			break; \
 	}
 
-// Input string operations (read only)
+//# Input string operations (read only)
 
-// (>) Go to the next character on the input string
+// (>) i( -- ) Go to the next character on the input string
 INSTR(inst_NextChar) {
 	if (E->input_index < strlen(E->input))
 		E->input_index += 1;
 }
 
-// (<) Go to the previous character in the input string
+// (<) i( -- ) Go to the previous character in the input string
 INSTR(inst_PrevChar) {
 	if (E->input_index > 0)
 		E->input_index -= 1;
 }
 
-// Generic data operations
+//# Generic data operations
 
-// (.) Push the current input character to the data
+// (.) i->d( in -- char ) Push the current input character to the data
 INSTR(inst_PushItem) {
 	INST_PUSH_CASTED(E->input[E->input_index])
 }
 
-// (,) Pop the topmost character from the data
+// (,) d( top -- ) Pop the topmost item from the data
 INSTR(inst_PopItem) {
 	if (E->data.length == 0)
 		INST_ERR("Data empty");
 	Data_Pop(&E->data);
 }
 
+// (&) d( top -- copy copy ) Duplicate the topmost item from the data
 INSTR(inst_DupItem) {
 	if (E->data.length == 0)
 		INST_ERR("Data empty");
@@ -95,7 +96,7 @@ INSTR(inst_DupItem) {
 	}
 }
 
-// (;) Pop and print the topmost character from the data
+// (;) d->i( top -- char ) Pop and print the topmost character from the data
 INSTR(inst_PrintChar) {
 	if (E->data.length == 0)
 		INST_ERR("Data empty");
@@ -113,7 +114,7 @@ INSTR(inst_PrintChar) {
 	}
 }
 
-// (:) Pop and print the topmost character from the data as a number
+// (:) d->i( top -- number ) Pop and print the topmost character from the data as a number
 INSTR(inst_PrintNumber) {
 	if (E->data.length == 0)
 		INST_ERR("Data empty");
@@ -138,32 +139,32 @@ INSTR(inst_PrintNumber) {
 	}
 }
 
-// (+) Add the two topmost items of the data as ASCII values
+// (+) d( item1 item2 -- result ) Add the two topmost items of the data as ASCII values
 INSTR(inst_AddData) {
 	INST_MATH_OP(b+a)
 }
 
-// (-) Substract the two topmost items of the data as ASCII values
+// (-) d( item1 item2 -- result ) Substract the two topmost items of the data as ASCII values
 INSTR(inst_SubData) {
 	INST_MATH_OP(b-a);
 }
 
-// (!) Reverse the entire data, for example, 'a' 'b' 'c' -> 'c' 'b' 'a'
+// (!) d( everything -> reversed ) Reverse the entire data, for example, 'a' 'b' 'c' -> 'c' 'b' 'a'
 INSTR(inst_ReverseData) {
 	Data_Reverse(&E->data);
 }
 
-// (@) Rotate the stack once (AKA put the last item first, 'a' 'b' 'c' -> 'b' 'c' 'a')
+// (@) ( bottom -> top ) Rotate the stack once (AKA put the last item first, 'a' 'b' 'c' -> 'b' 'c' 'a')
 INSTR(inst_RotateData) {
 	Data_Rotate(&E->data);
 }
 
-// ([a-z0-9]) Push the current character on the executed string
+// ([a-z0-9]) e->d( char -- item ) Push the current character on the executed string
 INSTR(inst_PushLiteral) {
 	INST_PUSH_CASTED(E->exec[E->pc]);
 }
 
-// (\) Push the following character escaped, based on the hardcoded "escaped" array
+// (\) e->d( char -- escaped_item ) Push the following character escaped, based on the hardcoded "escaped" array
 INSTR(inst_PushEscaped) {
 	if (E->exec[E->pc+1]) {
 		INST_PUSH_CASTED(escaped[(size_t)E->exec[E->pc+1]]);
@@ -175,12 +176,12 @@ INSTR(inst_PushEscaped) {
 
 // Control statements
 
-// ([) Set the waypoint used in `]`, which checks the input character
+// ([) c( -- waypoint ) Set the waypoint used in `]`, which checks the input character
 INSTR(inst_SetInputWP) {
 	WP_Push(&E->input_waypoint, E->pc-1);
 }
 
-// (]) Return (set pc) to the last input waypoint if the current character on the input string is not NUL
+// (]) c,i( waypoint,current -- ) Return (set pc) to the last input waypoint if the current character on the input string is not NUL
 INSTR(inst_UseInputWP) {
 	if (E->input[E->input_index]) {
 		pc_t tmp = WP_Pop(&E->input_waypoint);
@@ -188,12 +189,12 @@ INSTR(inst_UseInputWP) {
 	}
 }
 
-// ({) Set the waypoint used in `}`, which checks the topmost item of the data
+// ({) c( -- waypoint ) Set the waypoint used in `}`, which checks the topmost item of the data
 INSTR(inst_SetDataWP) {
 	WP_Push(&E->data_waypoint, E->pc-1);
 }
 
-// (}) Return (set pc) to the last data waypoint if the topmost item of the stack isn't NUL (or if the stack isn't empty)
+// (}) c,d( waypoint,top -- ) Return (set pc) to the last data waypoint if the topmost item of the stack isn't NUL (or if the stack isn't empty)
 INSTR(inst_UseDataWP) {
 	if (E->data.length > 0) {
 		pc_t tmp = WP_Pop(&E->data_waypoint);
@@ -201,7 +202,7 @@ INSTR(inst_UseDataWP) {
 	}
 }
 
-// (?) If the top two items on the data are equal, the next instruction is skipped, otherwise, it is executed. The last element of the data is always popped
+// (?) d,c( top :2nd -- skip1 ) If the top two items on the data are equal, the next instruction is skipped, otherwise, it is executed. The last element of the data is always popped
 INSTR(inst_IfNotEqual) {
 	switch (E->data.mode) {
 		case EAST_DATA_CHAR: {
@@ -246,7 +247,7 @@ INSTR(inst_IfNotEqual) {
 	}
 }
 
-// (#) Ignores everything until a newline or a NUL is found on the executed string
+// (#) e( skip -> ) Ignores everything until a newline or a NUL is found on the executed string
 INSTR(inst_Comment) {
 	while (E->exec[E->pc] != '\n' && E->exec[E->pc] != '\0') {
 		E->pc++;
