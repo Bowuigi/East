@@ -154,7 +154,7 @@ INSTR(inst_MultData) {
 	INST_MATH_OP(b*a);
 }
 
-// (*) d( item1 item2 -- result ) Divide the two topmost items of the data, if the top one is 0, then it gets replaced with 1 to prevent "division by zero" errors
+// (/) d( item1 item2 -- result ) Divide the two topmost items of the data, if the top one is 0, then it gets replaced with 1 to prevent "division by zero" errors
 INSTR(inst_DivData) {
 	INST_MATH_OP(b / ((a != 0) ? a : 1) );
 }
@@ -164,7 +164,7 @@ INSTR(inst_ReverseData) {
 	Data_Reverse(&E->data);
 }
 
-// (@) ( bottom -> top ) Rotate the stack once (AKA put the last item first, 'a' 'b' 'c' -> 'b' 'c' 'a')
+// (@) d( bottom -> top ) Rotate the stack once (AKA put the last item first, 'a' 'b' 'c' -> 'b' 'c' 'a')
 INSTR(inst_RotateData) {
 	Data_Rotate(&E->data);
 }
