@@ -139,14 +139,24 @@ INSTR(inst_PrintNumber) {
 	}
 }
 
-// (+) d( item1 item2 -- result ) Add the two topmost items of the data as ASCII values
+// (+) d( item1 item2 -- result ) Add the two topmost items of the data
 INSTR(inst_AddData) {
 	INST_MATH_OP(b+a)
 }
 
-// (-) d( item1 item2 -- result ) Substract the two topmost items of the data as ASCII values
+// (-) d( item1 item2 -- result ) Substract the two topmost items of the data
 INSTR(inst_SubData) {
 	INST_MATH_OP(b-a);
+}
+
+// (*) d( item1 item2 -- result ) Multiply the two topmost items of the data
+INSTR(inst_MultData) {
+	INST_MATH_OP(b*a);
+}
+
+// (*) d( item1 item2 -- result ) Divide the two topmost items of the data, if the top one is 0, then it gets replaced with 1 to prevent "division by zero" errors
+INSTR(inst_DivData) {
+	INST_MATH_OP(b / ((a != 0) ? a : 1) );
 }
 
 // (!) d( everything -> reversed ) Reverse the entire data, for example, 'a' 'b' 'c' -> 'c' 'b' 'a'
@@ -275,6 +285,8 @@ inst_t *Inst_Get() {
 	// Uses topmost two stack items
 	i['+']  = inst_AddData;
 	i['-']  = inst_SubData;
+	i['*']  = inst_MultData;
+	i['/']  = inst_DivData;
 	// Uses entire stack
 	i['!']  = inst_ReverseData;
 	i['@']  = inst_RotateData;
