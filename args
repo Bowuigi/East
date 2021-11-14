@@ -2,8 +2,12 @@
 -c char mode (default)
 -f float mode
 -d double mode
--F use first argument (that is not options) as a script file
 -n No standard input or file required
+-F use first argument (that is not options) as a script file
+
+-V show version, don't execute anything
+-W show warranty, don't execute anything
+-C show copyright, don't execute anything
 
 Examples
 
