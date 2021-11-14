@@ -57,10 +57,10 @@
 			Data_PushC(&E->data, character); \
 			break; \
 		case EAST_DATA_FLOAT: \
-			Data_PushF(&E->data, (float)character); \
+			Data_PushF(&E->data, character); \
 			break; \
 		case EAST_DATA_DOUBLE: \
-			Data_PushD(&E->data, (double)character); \
+			Data_PushD(&E->data, character); \
 			break; \
 	}
 
