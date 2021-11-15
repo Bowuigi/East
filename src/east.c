@@ -1,17 +1,17 @@
 /*
  * East: A stack based esolang for data manipulation
  * Copyright (C) 2021 Bowuigi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
@@ -134,11 +134,11 @@ int main(int argc, char **argv) {
 					if (fp == NULL)
 						EAST_ERR("No such file");
 
-					fclose(fp);
-
 					size_t unused;
 
 					ExecuteString(ReadFile(&unused, fp), &data, instructions, input);
+
+					fclose(fp);
 				} else {
 					ExecuteString(argv[2], &data, instructions, input);
 				}
@@ -149,7 +149,7 @@ int main(int argc, char **argv) {
 				data_t data = Data_Create(mode);
 
 				FILE *fp = fopen(argv[2], "r");
-				
+
 				if (fp == NULL)
 					EAST_ERR("No such file");
 
@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
 
 			if (use_input) {
 				FILE *fp = fopen(argv[3], "r");
-				
+
 				if (fp == NULL)
 					EAST_ERR("No such file");
 
