@@ -23,7 +23,7 @@ Which should install it in `/usr/local/bin/`
 ## Usage
 
 ```
-east script [file]
+east [flags] script [file]
 ```
 
 If no filename is given, East reads from standard input
@@ -31,3 +31,18 @@ If no filename is given, East reads from standard input
 The program reads every character from the first argument and then interprets each instruction
 
 Documentation for every instruction on the language is found on [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md)
+
+### Command line flags
+
+One argument mode only
+- `-W` Show warranty
+- `-C` Show copyright
+- `-V` Show version (East x.x.x)
+- `-h` Show help
+
+Two or three argument mode only
+- `-c` Use char mode (the default)
+- `-f` Use float mode
+- `-d` Use double mode
+- `-n` Don't use an input file or read standard input
+- `-F` Read script from the file instead of from the argument directly

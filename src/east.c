@@ -16,8 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#define VERSION puts("East 2.0.0")
-#define USAGE puts("East - Stack based esolang for text processing\n\neast script [file]")
+#define VERSION puts("East 2.0.3")
+#define USAGE puts("East - Stack based esolang for text processing\n\n\
+east [flags] script [file]\n\n\
+If file is not specified and -n is not used, read from standard input\n\n\
+One argument mode only:\n\
+ -W Show warranty\n\
+ -C Show copyright\n\
+ -V Show version (East x.x.x)\n\
+ -h Show help\n\
+\n\
+Two or three argument mode only:\n\
+ -c Use char mode (the default)\n\
+ -f Use float mode\n\
+ -d Use double mode\n\
+ -n Don't use an input file or read standard input\n\
+ -F Read script from the file instead of from the argument directly")
+
 #define WARRANTY puts("This program is distributed in the hope that it will be useful,\n\
 but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
