@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#define VERSION puts("East 2.0.3")
+#define VERSION puts("East 2.0.4")
 #define USAGE puts("East - Stack based esolang for text processing\n\n\
 east [flags] script [file]\n\n\
 If file is not specified and -n is not used, read from standard input\n\n\
@@ -106,6 +106,9 @@ int main(int argc, char **argv) {
 				case 'C':
 					COPYRIGHT;
 					break;
+				default:
+					fprintf(stderr,"East, warning: Unknown argument '-%c'\n", *argv[1]);
+					break;
 			}}return 0;}
 
 			input = ReadStdin(&input_length);
@@ -131,6 +134,9 @@ int main(int argc, char **argv) {
 					break;
 				case 'F':
 					use_script_file = 1;
+					break;
+				default:
+					fprintf(stderr,"East, warning: Unknown argument '-%c'\n", *argv[1]);
 					break;
 			}}
 				inst_t *instructions = Inst_Get();
@@ -194,6 +200,9 @@ int main(int argc, char **argv) {
 					break;
 				case 'F':
 					use_script_file = 1;
+					break;
+				default:
+					fprintf(stderr,"East, warning: Unknown argument '-%c'\n", *argv[1]);
 					break;
 			} ARGEND
 
