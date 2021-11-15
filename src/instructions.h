@@ -1,17 +1,17 @@
 /*
  * East: A stack based esolang for data manipulation
  * Copyright (C) 2021 Bowuigi
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
@@ -224,9 +224,26 @@ INSTR(inst_SetDataWP) {
 
 // (}) c,d( waypoint,top -- ) Return (set pc) to the last data waypoint if the topmost item of the stack isn't NUL (or if the stack isn't empty)
 INSTR(inst_UseDataWP) {
-	if (E->data.length > 0) {
-		pc_t tmp = WP_Pop(&E->data_waypoint);
-		E->pc = tmp;
+	ditem_t top = E->data.items[E->data.length-1];
+	switch (E->data.mode) {
+		case EAST_DATA_CHAR:
+			if (top.c != 0) {
+				pc_t tmp = WP_Pop(&E->data_waypoint);
+				E->pc = tmp;
+			}
+			break;
+		case EAST_DATA_FLOAT:
+			if (top.f != 0) {
+				pc_t tmp = WP_Pop(&E->data_waypoint);
+				E->pc = tmp;
+			}
+			break;
+		case EAST_DATA_DOUBLE:
+			if (top.d != 0) {
+				pc_t tmp = WP_Pop(&E->data_waypoint);
+				E->pc = tmp;
+			}
+			break;
 	}
 }
 
