@@ -16,16 +16,49 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef EAST_UTIL_H
-#define EAST_UTIL_H
+#include "wp.h"
 
-#define EAST_ERR(msg) do {fprintf(stderr,"East: %s\n", msg); exit(1);} while(0)
-#define EAST_FILESIZE_LIMIT 1073741824 // 1 GiB
+wp_t WP_Create() {
+	wp_t tmp;
 
-#include <stdlib.h>
-#include <stdio.h>
+	tmp.length = 0;
+	tmp.size = 10;
+	tmp.items = calloc(sizeof(size_t), tmp.size);
 
-char *ReadFile(size_t *length, FILE *fp);
-char *ReadStdin(size_t *length);
+	if (!tmp.items)
+		WP_ERR("Out of memory");
 
-#endif
+	return tmp;
+}
+
+void WP_Delete(wp_t *W) {
+	free(W->items);
+}
+
+static void WPDouble(wp_t *W) {
+	size_t *tmp;
+
+	W->size *= 2;
+	tmp = realloc(W->items, sizeof(size_t)*W->size);
+
+	if (!tmp)
+		WP_ERR("Out of memory");
+
+	W->items = tmp;
+}
+
+void WP_Push(wp_t *W, size_t waypoint) {
+	if (W->length+2 > W->size)
+		WPDouble(W);
+
+	W->items[W->length] = waypoint;
+	W->length++;
+	W->items[W->length+1] = 0;
+}
+
+size_t WP_Pop(wp_t *W) {
+	W->length--;
+	size_t tmp = W->items[W->length];
+	W->items[W->length] = 0;
+	return tmp;
+}

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#define VERSION puts("East 2.0.4")
+#define VERSION puts("East 2.0.5")
 #define USAGE puts("East - Stack based esolang for text processing\n\n\
 east [flags] script [file]\n\n\
 If file is not specified and -n is not used, read from standard input\n\n\

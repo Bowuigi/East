@@ -7,11 +7,11 @@ DESTDIR = /usr/local/bin/
 
 build:
 	@echo 'Building...'
-	$(CC) $(OPT) $(CFLAGS) src/east.c -o east
+	$(CC) $(OPT) $(CFLAGS) $(wildcard src/*.c) -o east
 
 debug:
 	@echo 'Building a debug release...'
-	$(CC) $(DEBUGCFLAGS) src/east.c -o east
+	$(CC) $(DEBUGCFLAGS) $(wildcard src/*.c) -o east
 
 install: build
 	@echo 'Installing...'
