@@ -22,6 +22,7 @@
 #include "globals.h"
 #define INST_ERR(err) do {fprintf(stderr, "East, error while interpreting\nCharacter %zu ('%c'): %s\n", E->pc+1, E->exec[E->pc], err); exit(1);} while (0);
 
+// Generic macro for doing math operations, handles modes correctly
 #define INST_MATH_OP(op) \
 	switch (E->data.mode) { \
 		case EAST_DATA_CHAR: { \
@@ -50,6 +51,7 @@
 			} \
 	}
 
+// Push a character to the stack, no matter which one is the mode
 #define INST_PUSH_CASTED(character) \
 	switch (E->data.mode) { \
 		case EAST_DATA_CHAR: \

@@ -18,10 +18,12 @@
 
 #include "util.h"
 
+// Read an entire file into a variable
 char *ReadFile(size_t *length, FILE *fp) {
 	size_t read_length;
 	size_t file_length;
 
+	// Get file length
 	fseek(fp, 0, SEEK_END);
 	file_length = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
@@ -30,11 +32,13 @@ char *ReadFile(size_t *length, FILE *fp) {
 		EAST_ERR("File too large");
 	}
 
+	// Make space for the contents and handle OOM
 	char *contents = malloc(file_length+1);
 
 	if (!contents)
 		EAST_ERR("Out of memory");
 
+	// Read the entire file and handle errors
 	read_length = fread(contents, 1, file_length, fp);
 
 	if (file_length != read_length) {
@@ -42,6 +46,7 @@ char *ReadFile(size_t *length, FILE *fp) {
 		EAST_ERR("Error on file read");
 	}
 
+	// NUL terminate the string and remove ending newline
 	contents[file_length] = '\0';
 
 	if (contents[file_length-1] == '\n') {
@@ -54,6 +59,7 @@ char *ReadFile(size_t *length, FILE *fp) {
 	return contents;
 }
 
+// Read the entirety of stdin on a single variable
 char *ReadStdin(size_t *length) {
 	size_t str_size = 10;
 	size_t str_length = 0;
@@ -61,9 +67,11 @@ char *ReadStdin(size_t *length) {
 
 	int c = '\0';
 
+	// Read char by char
 	while (c != EOF) {
 		c = getchar();
 
+		// Handle reallocation
 		if (str_length+1 > str_size) {
 			str_size *= 2;
 			char *tmp = realloc(contents, (str_size+1) * sizeof(char));
@@ -74,17 +82,21 @@ char *ReadStdin(size_t *length) {
 			contents = tmp;
 		}
 
+		// Append the character
 		contents[str_length] = (char)c;
 		str_length++;
 	}
 
-	str_length--; // Position over EOF
+	// Position over EOF and NUL terminate it
+	str_length--;
 	contents[str_length] = '\0';
 
+	// Remove ending newline if any
 	if (contents[str_length-1] == '\n') {
 		str_length--;
 		contents[str_length] = '\0';
 	}
 
+	*length = str_length;
 	return contents;
 }

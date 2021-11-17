@@ -18,21 +18,23 @@
 
 #include "instructions.h"
 
-char escaped[128] = {                                                                '0','1','2','3','4','5','6','7','8',
-    '9','0','1','2','3','4','5','6','7',
-    '8','9','0','1','2','3','4','5','6',
-    '7','8','9','0','1',' ','!','"','#',
-    '$','%','&','\'','(',')','*','+',
-    ',','-','.','/',0,1,2,3,4,5,6,7,8,9,
-    ':',';','<','=','>','?','@','A','B',
-    'C','D','E','F','G','H','I','J','K',
-    'L','M','N','O','P','Q','R','S','T',
-    'U','V','W','X','Y','Z','[','\\',
-    ']','^','_','`','\a','\b','c','d',
-    'e','\f','g','h','i','j','k','l',
-    'm','\n','o','p','q','\r','s','\t',
-    'u','\v','w','x','y','z','{','|',
-    '}','~','H'
+// Characters after escaping them
+char escaped[128] = {
+	'0','1','2','3','4','5','6','7','8',
+	'9','0','1','2','3','4','5','6','7',
+	'8','9','0','1','2','3','4','5','6',
+	'7','8','9','0','1',' ','!','"','#',
+	'$','%','&','\'','(',')','*','+',
+	',','-','.','/',0,1,2,3,4,5,6,7,8,9,
+	':',';','<','=','>','?','@','A','B',
+	'C','D','E','F','G','H','I','J','K',
+	'L','M','N','O','P','Q','R','S','T',
+	'U','V','W','X','Y','Z','[','\\',
+	']','^','_','`','\a','\b','c','d',
+	'\027','\f','g','h','i','j','k','l',
+	'm','\n','o','p','q','\r','s','\t',
+	'u','\v','w','x','y','z','{','|',
+	'}','~','H'
 };
 
 // Input string operations (read only)
@@ -68,6 +70,7 @@ INSTR(inst_DupItem) {
 	if (E->data.length == 0)
 		INST_ERR("Data empty");
 
+	// Handle modes
 	ditem_t item = Data_Pop(&E->data);
 	switch (E->data.mode) {
 		case EAST_DATA_CHAR:
@@ -118,6 +121,7 @@ INSTR(inst_PrintNumber) {
 		case EAST_DATA_DOUBLE: {
 				double n = Data_PopD(&E->data);
 
+				// Print in scientific notation if it is bigger than one million, normal float like otherwise
 				if (n > 1e6) {
 					printf("%e", n);
 				} else {
@@ -195,6 +199,7 @@ INSTR(inst_SetDataWP) {
 
 // (}) c,d( waypoint,top -- ) Return (set pc) to the last data waypoint if the topmost item of the stack isn't NUL (or if the stack isn't empty)
 INSTR(inst_UseDataWP) {
+	// Check top item on the stack
 	ditem_t top = E->data.items[E->data.length-1];
 	switch (E->data.mode) {
 		case EAST_DATA_CHAR:

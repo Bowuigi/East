@@ -16,52 +16,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
-#include <assert.h>
+#include "data.h"
 
-#define DATA_ERR(msg) do {fprintf(stderr,"East, fatal error: %s\n", msg);exit(1);} while (0)
-
-typedef enum {
-	EAST_DATA_FLOAT,
-	EAST_DATA_DOUBLE,
-	EAST_DATA_CHAR
-} dmode_t;
-
-typedef union {
-	double d;
-	float f;
-	char c;
-} ditem_t;
-
-typedef struct {
-	dmode_t mode;
-	ditem_t *items;
-	size_t length;
-	size_t size;
-} data_t;
-
+// Initialize a data_t with the given mode
 data_t Data_Create(dmode_t mode) {
 	data_t tmp;
 
 	tmp.mode = mode;
 	tmp.length = 0;
+	// 10 + extra NUL at the end so normal string functions work without worries
 	tmp.size = 11;
 	tmp.items = calloc(sizeof(ditem_t), tmp.size);
 
+	// Handle OOM after allocation
 	if (!tmp.items)
 		DATA_ERR("Out of memory");
 
 	return tmp;
 }
 
+// Destroy a data_t after it has fulfilled its purpose
 void Data_Delete(data_t *D) {
 	free(D->items);
 	D->mode = EAST_DATA_CHAR;
 }
 
+// Function only used on this file that doubles the size of the data_t structure, used for pushing
 static void DataDouble(data_t *D) {
+	// Remember the extra NUL, don't duplicate it
 	D->size = (D->size * 2) - 1;
 
+	// Allocate and handle OOM
 	ditem_t *tmp = realloc(D->items, sizeof(ditem_t)*D->size);
 
 	if (!tmp)
@@ -70,16 +55,21 @@ static void DataDouble(data_t *D) {
 	D->items = tmp;
 }
 
+// Push a char to the data_t structure, doubling the size if necessary
 void Data_PushC(data_t *D, char c) {
+	// This should always be true, but just in case
 	assert(D->mode == EAST_DATA_CHAR);
 
+	// Check if doubling is required
 	if (D->length+1 > D->size-1)
 		DataDouble(D);
 
+	// Actually push the character
 	D->items[D->length].c = c;
 	D->length++;
 }
 
+// The exact same as the above function, but push a float instead
 void Data_PushF(data_t *D, float f) {
 	assert(D->mode == EAST_DATA_FLOAT);
 
@@ -90,6 +80,7 @@ void Data_PushF(data_t *D, float f) {
 	D->length++;
 }
 
+// The exact same as the push char function, but push a double instead
 void Data_PushD(data_t *D, double d) {
 	assert(D->mode == EAST_DATA_DOUBLE);
 
@@ -100,6 +91,7 @@ void Data_PushD(data_t *D, double d) {
 	D->length++;
 }
 
+// Pop a raw ditem_t, used in the functions below
 ditem_t Data_Pop(data_t *D) {
 	if (D->length == 0)
 		DATA_ERR("Data empty");
@@ -109,35 +101,47 @@ ditem_t Data_Pop(data_t *D) {
 	return tmp;
 }
 
+// Pop a character from the data_t structure
 char Data_PopC(data_t *D) {
 	return Data_Pop(D).c;
 }
 
+// Pop a float from the data_t structure
 float Data_PopF(data_t *D) {
 	return Data_Pop(D).f;
 }
 
+// Pop a double from the data_t structure
 double Data_PopD(data_t *D) {
 	return Data_Pop(D).d;
 }
 
+// Rotate (123 -> 231) the items on the data_t structure
 void Data_Rotate(data_t *D) {
+	// First item on the data
 	ditem_t tmp = D->items[0];
 
+	// Move every element one slot backwards
 	for (size_t i = 0; i < D->length; i++)
 		D->items[i] = D->items[i+1];
 
+	// Set what used to be the first item to be the last one
 	D->items[D->length-1] = tmp;
 }
 
+// Reverse the items on the data_t data structure
 void Data_Reverse(data_t *D) {
+	// Create another items container to hold the reversed items
 	ditem_t *tmp = calloc(sizeof(ditem_t), D->size);
 
+	// Use a single for loop to reverse the entire items array
 	size_t old_i = 0;
 	size_t new_i = 0;
 	for (new_i = 0, old_i = D->length-1; new_i < D->length; new_i++, old_i--)
 		tmp[new_i] = D->items[old_i];
 
+	// Delete the old, not reversed array
 	free(D->items);
+	// Replace it with the new, reversed array
 	D->items = tmp;
 }

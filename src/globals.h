@@ -28,8 +28,10 @@
 #include "data.h"
 #include "wp.h"
 
+// Define the type used by the program counter and by the waypoints
 typedef size_t pc_t;
 
+// State which holds all the relevant variables for executing East code
 typedef struct {
 	char *exec;
 	char *input;
@@ -40,8 +42,10 @@ typedef struct {
 	data_t data;
 } East_State;
 
+// Macro to easily define instructions
 #define INSTR(name) void name(East_State *E)
 
+// Function pointer for instruction array
 typedef void(*inst_t)(East_State*);
 
 #endif // EAST_GLOBALS_H

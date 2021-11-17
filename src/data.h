@@ -24,18 +24,21 @@
 
 #define DATA_ERR(msg) do {fprintf(stderr,"East, fatal error: %s\n", msg);exit(1);} while (0)
 
+// Modes (AKA what type it uses) for the data
 typedef enum {
 	EAST_DATA_FLOAT,
 	EAST_DATA_DOUBLE,
 	EAST_DATA_CHAR
 } dmode_t;
 
+// Individual data item
 typedef union {
 	double d;
 	float f;
 	char c;
 } ditem_t;
 
+// Structure which holds the main data structure
 typedef struct {
 	dmode_t mode;
 	ditem_t *items;
@@ -43,6 +46,7 @@ typedef struct {
 	size_t size;
 } data_t;
 
+// Functions expprted to other files
 data_t Data_Create(dmode_t mode);
 void Data_Delete(data_t *D);
 void Data_PushC(data_t *D, char c);

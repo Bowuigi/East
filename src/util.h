@@ -25,7 +25,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// Exported functions
 char *ReadFile(size_t *length, FILE *fp);
 char *ReadStdin(size_t *length);
 
-#endif
+#endif // EAST_UTIL_H

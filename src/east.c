@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+// Useful macros when arg parsing
 #define VERSION puts("East 2.0.5")
 #define USAGE puts("East - Stack based esolang for text processing\n\n\
 east [flags] script [file]\n\n\
@@ -52,6 +53,7 @@ the Free Software Foundation, either version 3 of the License, or\n\
 #include "util.h"
 #include "sargp.h"
 
+// Execute a string on an isolated container, only provides access to the data and the input string
 void ExecuteString(char *string, data_t *data, inst_t *instr, char *input) {
 	East_State E;
 	// Program counter
@@ -62,7 +64,6 @@ void ExecuteString(char *string, data_t *data, inst_t *instr, char *input) {
 	E.data_waypoint  = WP_Create();
 	E.input_waypoint = WP_Create();
 
-	// Instruction given
 	E.exec  = string;
 	E.input = input;
 	E.data  = *data;
@@ -71,6 +72,7 @@ void ExecuteString(char *string, data_t *data, inst_t *instr, char *input) {
 	for (E.pc = 0; E.pc < strlen(string); E.pc++) {
 		// Execute instruction if the current character is not a newline or an underscore, since they are used for readability
 		if (!(string[E.pc] == '\n' || string[E.pc] == '_'))
+			// Cast to int because characters can't be array sunscripts, but literal characters can
 			instr[(int)string[E.pc]](&E);
 	}
 
@@ -81,18 +83,23 @@ void ExecuteString(char *string, data_t *data, inst_t *instr, char *input) {
 }
 
 int main(int argc, char **argv) {
+	// Default initialization
 	size_t input_length = 0;
 	char *input;
 	dmode_t mode = EAST_DATA_CHAR;
 	int use_input = 1;
 	int use_script_file = 0;
 
+	// Argument parsing starts here
 	switch (argc-1) {
+		// Usage on zero args
 		case 0:
 			USAGE;
 			return 1;
 			break;
+		// Check flags or script on one arg
 		case 1: {
+			// Exit if it is one of the following
 			ARGPARSE(argv[1]) {
 				case 'h':
 					USAGE;
@@ -111,6 +118,7 @@ int main(int argc, char **argv) {
 					break;
 			}}return 0;}
 
+			// Otherwise, load normally and get input from stdin
 			input = ReadStdin(&input_length);
 			inst_t *instructions = Inst_Get();
 			data_t data = Data_Create(mode);
@@ -118,7 +126,9 @@ int main(int argc, char **argv) {
 			ExecuteString(argv[1], &data, instructions, input);
 			break;
 		}
+		// Check if it is 'flags, script' or 'script, file'. Act accordingly
 		case 2: {
+			// If at least one of those is chosen, the second arg is a script
 			ARGPARSE(argv[1]) {
 				case 'c':
 					mode = EAST_DATA_CHAR;
