@@ -200,22 +200,22 @@ INSTR(inst_SetDataWP) {
 // (}) c,d( waypoint,top -- ) Return (set pc) to the last data waypoint if the topmost item of the stack isn't NUL (or if the stack isn't empty)
 INSTR(inst_UseDataWP) {
 	// Check top item on the stack
-	ditem_t top = E->data.items[E->data.length-1];
+	ditem_t top = E->data.items[E->data.length-2];
 	switch (E->data.mode) {
 		case EAST_DATA_CHAR:
-			if (top.c != 0) {
+			if (top.c) {
 				pc_t tmp = WP_Pop(&E->data_waypoint);
 				E->pc = tmp;
 			}
 			break;
 		case EAST_DATA_FLOAT:
-			if (top.f != 0) {
+			if (top.f) {
 				pc_t tmp = WP_Pop(&E->data_waypoint);
 				E->pc = tmp;
 			}
 			break;
 		case EAST_DATA_DOUBLE:
-			if (top.d != 0) {
+			if (top.d) {
 				pc_t tmp = WP_Pop(&E->data_waypoint);
 				E->pc = tmp;
 			}
@@ -305,7 +305,6 @@ inst_t *Inst_Get() {
 	i['[']  = inst_SetInputWP;
 	i[']']  = inst_UseInputWP;
 	i['{']  = inst_SetDataWP;
-	i['}']  = inst_UseDataWP;
 	i['}']  = inst_UseDataWP;
 	i['?']  = inst_IfNotEqual;
 	i['#']  = inst_Comment;
