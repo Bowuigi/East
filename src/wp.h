@@ -19,6 +19,7 @@
 #ifndef EAST_WP_H
 #define EAST_WP_H
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 

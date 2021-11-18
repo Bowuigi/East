@@ -19,6 +19,7 @@
 #ifndef EAST_DATA_H
 #define EAST_DATA_H
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
