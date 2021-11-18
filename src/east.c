@@ -71,7 +71,7 @@ void ExecuteString(char *string, data_t *data, inst_t *instr, char *input) {
 	// Execute the instruction given in the table
 	for (E.pc = 0; E.pc < strlen(string); E.pc++) {
 		// Execute instruction if the current character is not a newline or an underscore, since they are used for readability
-		if (!(string[E.pc] == '\n' || string[E.pc] == '_'))
+		if (!(string[E.pc] == '\n' || string[E.pc] == '_' || string[E.pc] == '\t'))
 			// Cast to int because characters can't be array sunscripts, but literal characters can
 			instr[(int)string[E.pc]](&E);
 	}
@@ -149,16 +149,20 @@ int main(int argc, char **argv) {
 					fprintf(stderr,"East, warning: Unknown argument '-%c'\n", *argv[1]);
 					break;
 			}}
+				// The usual preparation for execution
 				inst_t *instructions = Inst_Get();
 				data_t data = Data_Create(mode);
 
 				if (use_input) {
+					// The '_' is a unused variable
 					size_t _;
 					input = ReadStdin(&_);
 				} else {
+					// This is so you can use square brackets to do loops
 					input = "0";
 				}
 
+				// Read the East code from a file (whose filename was supplied on the given argument)
 				if (use_script_file) {
 					FILE *fp = fopen(argv[2], "r");
 
@@ -167,15 +171,19 @@ int main(int argc, char **argv) {
 
 					size_t unused;
 
+					// Execute normally
 					ExecuteString(ReadFile(&unused, fp), &data, instructions, input);
 
 					fclose(fp);
 				} else {
+					// Execute as in older versions
 					ExecuteString(argv[2], &data, instructions, input);
 				}
 
+				// Usual cleanup
 				Data_Delete(&data);
 			} else {
+				// This is how East was executed before command line parsing
 				inst_t *instructions = Inst_Get();
 				data_t data = Data_Create(mode);
 
@@ -184,10 +192,12 @@ int main(int argc, char **argv) {
 				if (fp == NULL)
 					EAST_ERR("No such file");
 
+				// Input comes from the given file
 				input = ReadFile(&input_length, fp);
 
 				fclose(fp);
 
+				// Code comes from the first argument and gets executed
 				ExecuteString(argv[1], &data, instructions, input);
 
 				Data_Delete(&data);
@@ -195,6 +205,7 @@ int main(int argc, char **argv) {
 			break;
 		}
 		case 3: {
+			// Same argument parsing as before
 			ARGPARSE(argv[1]) {
 				case 'c':
 					mode = EAST_DATA_CHAR;
@@ -216,9 +227,11 @@ int main(int argc, char **argv) {
 					break;
 			} ARGEND
 
+			// Same preparation
 			inst_t *instructions = Inst_Get();
 			data_t data = Data_Create(mode);
 
+			// Same check for -n flag
 			if (use_input) {
 				FILE *fp = fopen(argv[3], "r");
 
@@ -229,9 +242,11 @@ int main(int argc, char **argv) {
 
 				fclose(fp);
 			} else {
+				// Used like this because of []
 				input = "0";
 			}
 
+			// Same check for script file
 			if (use_script_file) {
 				FILE *fp = fopen(argv[2], "r");
 
@@ -247,13 +262,16 @@ int main(int argc, char **argv) {
 				ExecuteString(argv[2], &data, instructions, input);
 			}
 
+			// Same cleanup
 			Data_Delete(&data);
 			break;
 		}
+		// Show usage to help newcomers
 		default:
 			USAGE;
 			break;
 	}
 
+	// This is for pretty output and also to flush stdout
 	putchar('\n');
 }
