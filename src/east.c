@@ -68,6 +68,18 @@ void ExecuteString(char *string, data_t *data, inst_t *instr, char *input) {
 	E.input = input;
 	E.data  = *data;
 
+	switch (E.data.mode) {
+		case EAST_DATA_CHAR:
+			Data_PushC(&E.data, '\0');
+			break;
+		case EAST_DATA_FLOAT:
+			Data_PushF(&E.data, 0);
+			break;
+		case EAST_DATA_DOUBLE:
+			Data_PushD(&E.data, 0);
+			break;
+	}
+
 	// Execute the instruction given in the table
 	for (E.pc = 0; E.pc < strlen(string); E.pc++) {
 		// Execute instruction if the current character is not a newline or an underscore, since they are used for readability

@@ -24,8 +24,7 @@ data_t Data_Create(dmode_t mode) {
 
 	tmp.mode = mode;
 	tmp.length = 0;
-	// 10 + extra NUL at the end so normal string functions work without worries
-	tmp.size = 11;
+	tmp.size = 10;
 	tmp.items = calloc(sizeof(ditem_t), tmp.size);
 
 	// Handle OOM after allocation
@@ -43,8 +42,7 @@ void Data_Delete(data_t *D) {
 
 // Function only used on this file that doubles the size of the data_t structure, used for pushing
 static void DataDouble(data_t *D) {
-	// Remember the extra NUL, don't duplicate it
-	D->size = (D->size * 2) - 1;
+	D->size *= 2;
 
 	// Allocate and handle OOM
 	ditem_t *tmp = realloc(D->items, sizeof(ditem_t)*D->size);
@@ -61,7 +59,7 @@ void Data_PushC(data_t *D, char c) {
 	assert(D->mode == EAST_DATA_CHAR);
 
 	// Check if doubling is required
-	if (D->length+1 > D->size-1)
+	if (D->length+1 > D->size)
 		DataDouble(D);
 
 	// Actually push the character
@@ -73,7 +71,7 @@ void Data_PushC(data_t *D, char c) {
 void Data_PushF(data_t *D, float f) {
 	assert(D->mode == EAST_DATA_FLOAT);
 
-	if (D->length+1 > D->size-1)
+	if (D->length+1 > D->size)
 		DataDouble(D);
 
 	D->items[D->length].f = f;
@@ -84,7 +82,7 @@ void Data_PushF(data_t *D, float f) {
 void Data_PushD(data_t *D, double d) {
 	assert(D->mode == EAST_DATA_DOUBLE);
 
-	if (D->length+1 > D->size-1)
+	if (D->length+1 > D->size)
 		DataDouble(D);
 
 	D->items[D->length].d = d;
