@@ -17,7 +17,7 @@
 */
 
 // Useful macros when arg parsing
-#define VERSION puts("East 2.0.6")
+#define VERSION puts("East 2.1.0")
 #define USAGE puts("East - Stack based esolang for text processing\n\n\
 east [flags] script [file]\n\n\
 If file is not specified and -n is not used, read from standard input\n\n\
