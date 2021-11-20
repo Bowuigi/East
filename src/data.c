@@ -31,6 +31,18 @@ data_t Data_Create(dmode_t mode) {
 	if (!tmp.items)
 		DATA_ERR("Out of memory");
 
+	switch (tmp.mode) {
+		case EAST_DATA_CHAR:
+			Data_PushC(&tmp, '\0');
+			break;
+		case EAST_DATA_FLOAT:
+			Data_PushF(&tmp, 0);
+			break;
+		case EAST_DATA_DOUBLE:
+			Data_PushD(&tmp, 0);
+			break;
+	}
+
 	return tmp;
 }
 

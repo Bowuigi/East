@@ -108,13 +108,16 @@ INSTR(inst_ReverseData);
 // (@) d( bottom -> top ) Rotate the stack once (AKA put the last item first, 'a' 'b' 'c' -> 'b' 'c' 'a')
 INSTR(inst_RotateData);
 
+// (=) d( until_NUL -- execute_result ) Read (not pop) everything until a NUL, reverse it, and execute it as East code, only being able to modify the data (the rest is isolated)
+INSTR(inst_ExecData);
+
 // ([a-z0-9]) e->d( char -- item ) Push the current character on the executed string
 INSTR(inst_PushLiteral);
 
 // (\) e->d( char -- escaped_item ) Push the following character escaped, based on the hardcoded "escaped" array
 INSTR(inst_PushEscaped);
 
-// Control statements
+// Control statements (The ones that modify the interpreter state)
 
 // ([) c( -- waypoint ) Set the waypoint used in `]`, which checks the input character
 INSTR(inst_SetInputWP);

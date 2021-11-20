@@ -67,18 +67,7 @@ void ExecuteString(char *string, data_t *data, inst_t *instr, char *input) {
 	E.exec  = string;
 	E.input = input;
 	E.data  = *data;
-
-	switch (E.data.mode) {
-		case EAST_DATA_CHAR:
-			Data_PushC(&E.data, '\0');
-			break;
-		case EAST_DATA_FLOAT:
-			Data_PushF(&E.data, 0);
-			break;
-		case EAST_DATA_DOUBLE:
-			Data_PushD(&E.data, 0);
-			break;
-	}
+	E.instr = instr;
 
 	// Execute the instruction given in the table
 	for (E.pc = 0; E.pc < strlen(string); E.pc++) {

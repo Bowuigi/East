@@ -50,6 +50,8 @@ Everything inside the parentheses is the stuff pushed, readed and popped from th
 
 Everything before `--` is what is popped/readed
 
+If there is a `->` instead of a `--`, then it means that it takes the entire data, like on `!`
+
 The parameters are separated by a space
 
 If a parameter has a `:` before its name, then it is just readed from the data without popping

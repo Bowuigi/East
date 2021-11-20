@@ -19,6 +19,8 @@ Everything inside the parentheses is the stuff pushed, readed and popped from th
 
 Everything before `--` is what is popped/readed
 
+If there is a `->` instead of a `--`, then it means that it takes the entire data, like on `!`
+
 The parameters are separated by a space
 
 If a parameter has a `:` before its name, then it is just readed from the data without popping
@@ -100,6 +102,11 @@ Reverse the entire data, for example, 'a' 'b' 'c' -> 'c' 'b' 'a'
 **d( bottom -> top )**
 
 Rotate the stack once (AKA put the last item first, 'a' 'b' 'c' -> 'b' 'c' 'a')
+
+## Instruction `=`
+**d( until_NUL -- execute_result )**
+
+Read (not pop) everything until a NUL, reverse it, and execute it as East code, only being able to modify the data (the rest is isolated)
 
 ## Instruction `\`
 **e->d( char -- escaped_item )**

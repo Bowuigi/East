@@ -162,6 +162,44 @@ INSTR(inst_RotateData) {
 	Data_Rotate(&E->data);
 }
 
+// (=) d( until_NUL -- execute_result ) Read (not pop) everything until a NUL, reverse it, and execute it as East code, only being able to modify the data (the rest is isolated)
+INSTR(inst_ExecData) {
+	size_t i = E->data.length-1;
+	size_t exec_i = 0;
+	size_t exec_s = 10;
+	char *exec = calloc(exec_s, sizeof(char));
+
+	switch (E->data.mode) {
+		case EAST_DATA_CHAR:
+			while (E->data.items[i].c != '\0') i--;
+			i++;
+
+			for (; i < E->data.length ; i++) {
+				if (exec_i > exec_s) {
+					exec_s *= 2;
+					char *tmp = realloc(exec, sizeof(char)*exec_s);
+					if (!tmp)
+						INST_ERR("Allocation failed, out of memory");
+					exec = tmp;
+				}
+				exec[exec_i] = E->data.items[i].c;
+				exec_i++;
+			}
+
+			ExecuteString(exec, &E->data, E->instr, E->input);
+			free(exec);
+			break;
+		case EAST_DATA_FLOAT:
+			while (E->data.items[i].f != 0) i++;
+			i--;
+			break;
+		case EAST_DATA_DOUBLE:
+			while (E->data.items[i].d != 0) i++;
+			i--;
+			break;
+	}
+}
+
 // ([a-z0-9]) e->d( char -- item ) Push the current character on the executed string
 INSTR(inst_PushLiteral) {
 	INST_PUSH_CASTED(E->exec[E->pc]);
@@ -301,6 +339,8 @@ inst_t *Inst_Get() {
 	// Uses entire stack
 	i['!']  = inst_ReverseData;
 	i['@']  = inst_RotateData;
+	// Uses until NUL
+	i['=']  = inst_ExecData;
 	// Uses PC, controls the state of the interpreter
 	i['[']  = inst_SetInputWP;
 	i[']']  = inst_UseInputWP;
