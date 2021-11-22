@@ -1,0 +1,26 @@
+filetype: east
+
+detect:
+    filename: "\\.east$"
+
+rules:
+    # Control statements
+    - statement: "[\\[\\]{}\\?]"
+    # Operators
+    - symbol: "[_\\+\\-\\*\\/]"
+    # Data manipulation
+    - symbol: "[\\.,&:;]"
+    # Other
+    - statement: "[!@<>=]"
+    # Functions
+    - special: "(\\$.|\\%.|\\^)"
+    # Registers
+    - special: "(\".|\'.)"
+    # Escaped
+    - constant: "\\\\."
+
+    - comment:
+        start: "#"
+        end: "$"
+        rules:
+            - todo: "(TODO|NOTE|FIXME):?"

@@ -1,0 +1,39 @@
+# Fail because this is just for testing
+-
+# Comment
+
+?# Comment that can be executed
+
+# Control statements
+[
+	{
+		?
+	}
+	>
+]
+
+# Characters
+123456789
+abcdefghijklmnopqrstuvwxyz
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+# Escaped characters
+\+\ \o \_
+
+# Operators (and NOP)
+_+-*/
+
+# Data manipulation
+.,&;:
+
+# Other
+!@<>=
+
+# Functions (WIP)
+$A_$b_
+%c
+	\2*
+^
+
+# Registers (WIP)
+'A_'B "c "/ '$ '% "_ '_
