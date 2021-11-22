@@ -237,6 +237,10 @@ INSTR(inst_SetDataWP) {
 
 // (}) c,d( waypoint,top -- ) Return (set pc) to the last data waypoint if the topmost item of the stack isn't NUL (or if the stack isn't empty)
 INSTR(inst_UseDataWP) {
+	// Return if stack is empty
+	if (E->data.length == 0)
+		return;
+
 	// Check top item on the stack
 	ditem_t top = E->data.items[E->data.length-1];
 	switch (E->data.mode) {
