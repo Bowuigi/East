@@ -137,7 +137,11 @@ INSTR(inst_IfNotEqual);
 // (#) e( skip -> ) Ignores everything until a newline or a NUL is found on the executed string
 INSTR(inst_Comment);
 
+// (%) c( until_end -> ) Declare a user defined instruction, for later access with `$`, the function declaration is from the % (taking the next character as the name) to the corresponding '^'
 INSTR(inst_FuncDec);
+
+// ($) c( user_defined -- user_defined ) Execute user defined function, the next character is used as the name of it
+INSTR(inst_FuncExec);
 
 uinst_t *Inst_UCreate();
 inst_t *Inst_Get();

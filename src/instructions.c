@@ -350,7 +350,7 @@ INSTR(inst_Comment) {
 	}
 }
 
-// (%) c( until_^ -> ) Declare a user defined instruction, for later access with `$`, the function declaration is from the % (taking the next character as the name) to the corresponding '^'
+// (%) c( until_end -> ) Declare a user defined instruction, for later access with `$`, the function declaration is from the % (taking the next character as the name) to the corresponding '^'
 INSTR(inst_FuncDec) {
 	// Allocate a string to define the function
 	size_t size = 10;
