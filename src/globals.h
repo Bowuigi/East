@@ -35,6 +35,7 @@ struct East_State;
 
 // Function pointer for instruction array
 typedef void(*inst_t)(struct East_State*);
+typedef char* uinst_t;
 
 // State which holds all the relevant variables for executing East code
 typedef struct East_State {
@@ -46,11 +47,12 @@ typedef struct East_State {
 	wp_t input_waypoint;
 	data_t data;
 	inst_t *instr;
+	uinst_t *userinstr;
 } East_State;
 
 // Macro to easily define instructions
 #define INSTR(name) void name(East_State *E)
 
-void ExecuteString(char *string, data_t *data, inst_t *instr, char *input);
+void ExecuteString(char *string, data_t *data, inst_t *instr, uinst_t **userinstr, char *input);
 
 #endif // EAST_GLOBALS_H

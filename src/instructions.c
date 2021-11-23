@@ -186,16 +186,49 @@ INSTR(inst_ExecData) {
 				exec_i++;
 			}
 
-			ExecuteString(exec, &E->data, E->instr, E->input);
+			ExecuteString(exec, &E->data, E->instr, &E->userinstr, E->input);
 			free(exec);
+
 			break;
 		case EAST_DATA_FLOAT:
 			while (E->data.items[i].f != 0) i++;
 			i--;
+
+			for (; i < E->data.length ; i++) {
+				if (exec_i > exec_s) {
+					exec_s *= 2;
+					char *tmp = realloc(exec, sizeof(char)*exec_s);
+					if (!tmp)
+						INST_ERR("Out of memory");
+					exec = tmp;
+				}
+				exec[exec_i] = (char)E->data.items[i].f;
+				exec_i++;
+			}
+
+			ExecuteString(exec, &E->data, E->instr, &E->userinstr, E->input);
+			free(exec);
+
 			break;
 		case EAST_DATA_DOUBLE:
 			while (E->data.items[i].d != 0) i++;
 			i--;
+
+			for (; i < E->data.length ; i++) {
+				if (exec_i > exec_s) {
+					exec_s *= 2;
+					char *tmp = realloc(exec, sizeof(char)*exec_s);
+					if (!tmp)
+						INST_ERR("Allocation failed, out of memory");
+					exec = tmp;
+				}
+				exec[exec_i] = (char)E->data.items[i].d;
+				exec_i++;
+			}
+
+			ExecuteString(exec, &E->data, E->instr, &E->userinstr, E->input);
+			free(exec);
+
 			break;
 	}
 }
@@ -317,6 +350,62 @@ INSTR(inst_Comment) {
 	}
 }
 
+// (%) c( until_^ -> ) Declare a user defined instruction, for later access with `$`, the function declaration is from the % (taking the next character as the name) to the corresponding '^'
+INSTR(inst_FuncDec) {
+	// Allocate a string to define the function
+	size_t size = 10;
+	size_t length = 0;
+	char *func = malloc(size*sizeof(char));
+
+	pc_t cur = E->pc+1;
+
+	while (1) {
+		if (E->exec[cur] == '\0')
+			INST_ERR("Expected '^' on function definition, got EOF");
+
+		// Resize if required
+		if (length+1 > size) {
+			size *= 2;
+			char *tmp = realloc(func, size*sizeof(char));
+			if (!tmp)
+				INST_ERR("Out of memory");
+			func = tmp;
+		}
+
+		if (E->exec[cur] == '^') {
+			func[length] = '\0';
+			break;
+		} else {
+			func[length] = E->exec[cur];
+		}
+
+		length++;
+		cur++;
+	}
+	E->userinstr[(size_t)*func] = func+1;
+	free(func);
+
+	E->pc = cur;
+}
+
+// ($) c( user_defined -- user_defined ) Execute user defined function, the next character is used as the name of it
+INSTR(inst_FuncExec) {
+	if (E->exec[E->pc+1] == '\0')
+		INST_ERR("Tried to call EOF as an user defined instruction");
+	E->pc++;
+
+	ExecuteString(E->userinstr[(size_t)E->exec[E->pc]], &E->data, E->instr, &E->userinstr, E->input);
+}
+
+uinst_t *Inst_UCreate() {
+	static uinst_t i[127];
+
+	for (int c = 0; c < 127; c++)
+		i[c] = "";
+
+	return i;
+}
+
 inst_t *Inst_Get() {
 	static inst_t i[127];
 
@@ -352,6 +441,9 @@ inst_t *Inst_Get() {
 	i['}']  = inst_UseDataWP;
 	i['?']  = inst_IfNotEqual;
 	i['#']  = inst_Comment;
+	// Functions
+	i['%']  = inst_FuncDec;
+	i['$']  = inst_FuncExec;
 
 	return i;
 }

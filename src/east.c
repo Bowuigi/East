@@ -17,7 +17,7 @@
 */
 
 // Useful macros when arg parsing
-#define VERSION puts("East 2.1.1")
+#define VERSION puts("East 2.2.0")
 #define USAGE puts("East - Stack based esolang for text processing\n\n\
 east [flags] script [file]\n\n\
 If file is not specified and -n is not used, read from standard input\n\n\
@@ -54,7 +54,7 @@ the Free Software Foundation, either version 3 of the License, or\n\
 #include "sargp.h"
 
 // Execute a string on an isolated container, only provides access to the data and the input string
-void ExecuteString(char *string, data_t *data, inst_t *instr, char *input) {
+void ExecuteString(char *string, data_t *data, inst_t *instr, uinst_t **userinstr, char *input) {
 	East_State E;
 	// Program counter
 	E.pc = 0;
@@ -68,6 +68,7 @@ void ExecuteString(char *string, data_t *data, inst_t *instr, char *input) {
 	E.input = input;
 	E.data  = *data;
 	E.instr = instr;
+	E.userinstr = *userinstr;
 
 	// Execute the instruction given in the table
 	for (E.pc = 0; E.pc < strlen(string); E.pc++) {
@@ -122,9 +123,10 @@ int main(int argc, char **argv) {
 			// Otherwise, load normally and get input from stdin
 			input = ReadStdin(&input_length);
 			inst_t *instructions = Inst_Get();
+			uinst_t *user_instructions = Inst_UCreate();
 			data_t data = Data_Create(mode);
 
-			ExecuteString(argv[1], &data, instructions, input);
+			ExecuteString(argv[1], &data, instructions, &user_instructions, input);
 			break;
 		}
 		// Check if it is 'flags, script' or 'script, file'. Act accordingly
@@ -152,6 +154,7 @@ int main(int argc, char **argv) {
 			}}
 				// The usual preparation for execution
 				inst_t *instructions = Inst_Get();
+				uinst_t *user_instructions = Inst_UCreate();
 				data_t data = Data_Create(mode);
 
 				if (use_input) {
@@ -173,12 +176,12 @@ int main(int argc, char **argv) {
 					size_t unused;
 
 					// Execute normally
-					ExecuteString(ReadFile(&unused, fp), &data, instructions, input);
+					ExecuteString(ReadFile(&unused, fp), &data, instructions, &user_instructions, input);
 
 					fclose(fp);
 				} else {
 					// Execute as in older versions
-					ExecuteString(argv[2], &data, instructions, input);
+					ExecuteString(argv[2], &data, instructions, &user_instructions, input);
 				}
 
 				// Usual cleanup
@@ -186,6 +189,7 @@ int main(int argc, char **argv) {
 			} else {
 				// This is how East was executed before command line parsing
 				inst_t *instructions = Inst_Get();
+				uinst_t *user_instructions = Inst_UCreate();
 				data_t data = Data_Create(mode);
 
 				FILE *fp = fopen(argv[2], "r");
@@ -199,7 +203,7 @@ int main(int argc, char **argv) {
 				fclose(fp);
 
 				// Code comes from the first argument and gets executed
-				ExecuteString(argv[1], &data, instructions, input);
+				ExecuteString(argv[1], &data, instructions, &user_instructions, input);
 
 				Data_Delete(&data);
 			}
@@ -230,6 +234,7 @@ int main(int argc, char **argv) {
 
 			// Same preparation
 			inst_t *instructions = Inst_Get();
+			uinst_t *user_instructions = Inst_UCreate();
 			data_t data = Data_Create(mode);
 
 			// Same check for -n flag
@@ -258,9 +263,9 @@ int main(int argc, char **argv) {
 
 				size_t _;
 
-				ExecuteString(ReadFile(&_, fp), &data, instructions, input);
+				ExecuteString(ReadFile(&_, fp), &data, instructions, &user_instructions, input);
 			} else {
-				ExecuteString(argv[2], &data, instructions, input);
+				ExecuteString(argv[2], &data, instructions, &user_instructions, input);
 			}
 
 			// Same cleanup

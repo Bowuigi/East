@@ -137,6 +137,9 @@ INSTR(inst_IfNotEqual);
 // (#) e( skip -> ) Ignores everything until a newline or a NUL is found on the executed string
 INSTR(inst_Comment);
 
+INSTR(inst_FuncDec);
+
+uinst_t *Inst_UCreate();
 inst_t *Inst_Get();
 
 #endif // EAST_INSTR_H header guard
