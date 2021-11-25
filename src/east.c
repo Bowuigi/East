@@ -259,11 +259,11 @@ int main(int argc, char **argv) {
 				if (fp == NULL)
 					EAST_ERR("No such file");
 
+				size_t size;
+
+				ExecuteString(ReadFile(&size, fp), &data, instructions, &user_instructions, input);
+
 				fclose(fp);
-
-				size_t _;
-
-				ExecuteString(ReadFile(&_, fp), &data, instructions, &user_instructions, input);
 			} else {
 				ExecuteString(argv[2], &data, instructions, &user_instructions, input);
 			}
