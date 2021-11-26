@@ -1,0 +1,58 @@
+# Some of the cool tricks that you can do with the language
+# You shouldn't run this file, but copy the examples somewhere else
+# Those tricks are not ordered
+
+- # Make sure to fail
+
+# Execute comments
+?# Yeah this thing can execute
+# Comments are instructions
+# '?' skips instructions
+?# # Actual comment inside a comment
+
+# Two stacks on one stack
+# A NUL inside a stack changes how instructions intepret it, for example, "{ }" stops when it finds a NUL
+1 2 3 \0 4 5 6
+# '!' Works as a way to swap stacks
+# '@' Transfers items between stacks
+
+# Reverse rotation
+!@! # Yeah that is it
+
+# Use '=' as a stack duplicator
+# While you can use "{&@}" or something similar, '=' is a very convenient option
+1 2 3 =
+# 1 2 3 1 2 3
+
+# Infinite loops
+# 1: Input
+<[ looping ] # '<' won’t move back if it is the beggining of the file, and input will be set to "0" (the C string) if -n is passed
+# 2: Data
+0{ looping }, # This would loop infinitely as long as the stack is empty when you start the loop
+# 3: Recursion
+\== # Exactly how recursion works, you push an equal to the stack and then execute that equal, which executes the same equal again, and again, and a lot of times until you see the fatal error
+# 4: Recursion with functions
+%1 recursion v2 $1 ^ $1
+# The same as above, but with functions
+
+# For loop using double stack (without registers)
+\1\0 # Loop variable and separator
+[
+	! # Access the other part of the data
+	3 # Push a 3 to the usable part
+	! # Access the loop variable
+	\1+ # Increment it
+\3?] # Return if it is not 3
+,, # Clean up the variables used
+! # Leave the data unchanged
+{;} # See the results
+
+# Get big numbers easily
+\~ # The biggest printable ASCII character, 126
+&*&*&* # This is already huge (6.352788e+16 in double mode), use sparingly
+
+# "{ }" and "[ ]" don't have to exist in equal amounts
+# You can push more than one waypoint for optional later use
+{{ [[
+# And you can go back more than the amount available, it just takes you to PC 0 (The first instruction)
+}}}}}}}}]]]]]]

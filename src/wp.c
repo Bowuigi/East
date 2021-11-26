@@ -57,6 +57,8 @@ void WP_Push(wp_t *W, size_t waypoint) {
 }
 
 size_t WP_Pop(wp_t *W) {
+	if (W->length <= 0)
+		return 0;
 	W->length--;
 	size_t tmp = W->items[W->length];
 	W->items[W->length] = 0;
