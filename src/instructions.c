@@ -235,7 +235,11 @@ INSTR(inst_ExecData) {
 
 // ([a-z0-9]) e->d( char -- item ) Push the current character on the executed string
 INSTR(inst_PushLiteral) {
-	INST_PUSH_CASTED(E->exec[E->pc]);
+	if (E->exec[E->pc] == '_') {
+		INST_PUSH_CASTED(' ');
+	} else {
+		INST_PUSH_CASTED(E->exec[E->pc]);
+	}
 }
 
 // (\) e->d( char -- escaped_item ) Push the following character escaped, based on the hardcoded "escaped" array

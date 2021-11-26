@@ -17,7 +17,7 @@
 */
 
 // Useful macros when arg parsing
-#define VERSION puts("East 2.2.0")
+#define VERSION puts("East 3.0.0")
 #define USAGE puts("East - Stack based esolang for text processing\n\n\
 east [flags] script [file]\n\n\
 If file is not specified and -n is not used, read from standard input\n\n\
@@ -72,8 +72,8 @@ void ExecuteString(char *string, data_t *data, inst_t *instr, uinst_t **userinst
 
 	// Execute the instruction given in the table
 	for (E.pc = 0; E.pc < strlen(string); E.pc++) {
-		// Execute instruction if the current character is not a newline or an underscore, since they are used for readability
-		if (!(string[E.pc] == '\n' || string[E.pc] == '_' || string[E.pc] == '\t'))
+		// Execute instruction if the current character is not a newline or a space, since they are used for readability
+		if (!(string[E.pc] == '\n' || string[E.pc] == ' ' || string[E.pc] == '\t'))
 			// Cast to int because characters can't be array sunscripts, but literal characters can
 			instr[(int)string[E.pc]](&E);
 	}
